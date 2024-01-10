@@ -42,6 +42,32 @@ For production mode, you can run this command to build the app and start the ser
 npm build && npm start
 ```
 
+## Project Structure
+
+```bash
+├── .git                    # Git folder (after you run git init or clone this repo)
+├── .vercel                 # Vercel configuration folder (after you deploy to Vercel)
+├── dist                    # Bundle file (after you run npm build)
+├── node_modules            # Node modules folder (after you run npm install)
+├── src                     # Main source folder
+│   ├── data ──┐
+│   │          └── index.js # Data source for storing short URL
+│   │
+│   ├── lib ───┐
+│   │          └── index.js # Helper functions
+│   │
+│   └── server.js           # Main server file
+├── .gitignore              # Ignore file/folder for git
+├── LICENSE                 # License file
+├── nodemon.json            # Nodemon configuration file (for development mode)
+├── package.json            # NPM package file (for dependencies)
+├── package-lock.json       # NPM package lock file (for dependencies)
+├── README.md               # README file (this file)
+├── vercel.json             # Vercel configuration file (for vercel serverless function configuration)
+└── webpack.config.js       # Webpack configuration file (for bundling & minifying the source code)
+
+```
+
 ## Deployment
 
 You can deploy this app to Vercel by clicking this button below
