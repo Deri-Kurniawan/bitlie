@@ -75,7 +75,7 @@ You can deploy this app to Vercel by clicking this button below
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=http://github.com/deri-kurniawan/bitlie)
 
 ## License
-This project is licensed under the [MIT]("/LICENSE") license.
+This project is licensed under the [MIT](/LICENSE) license.
 
 ## Author
 Created with ❤️ by [Deri Kurniawan](https://github.com/Deri-Kurniawan)
