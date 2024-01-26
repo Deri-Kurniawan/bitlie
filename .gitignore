@@ -1,4 +1,10 @@
-.vercel
+# local env files
 .env
+!.env.example
+
+# build output
+.vercel
 dist
+
+# dependencies
 node_modules

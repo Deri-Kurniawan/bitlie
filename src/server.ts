@@ -1,16 +1,22 @@
+import { DataProps } from "./types/globals";
+
+const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const { data } = require("./data");
-const { getPackageJson, jsonBeautify } = require("./lib");
+const { data } = require("./data/links");
+const { getPackageJson, jsonBeautify } = require("./lib/utils");
+
+dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/", async (req, res) => {
+app.get("/", async (req: any, res: any) => {
   const {
     name,
     version,
@@ -42,7 +48,7 @@ app.get("/", async (req, res) => {
         version: devDependencies[key],
       })),
     },
-    data: data.map((item) => ({
+    data: data.map((item: DataProps) => ({
       alias: item.alias,
       aliasUrl: `${req.baseUrl}/${item.alias}`,
       targetUrl: item.targetUrl,
@@ -55,17 +61,17 @@ app.get("/", async (req, res) => {
     .send(jsonBeautify(responseBuilder));
 });
 
-app.get("/LICENSE", (_, res) => {
+app.get("/LICENSE", (_: any, res: any) => {
   res
     .setHeader("Content-Type", "text/plain")
     .status(200)
     .sendFile(path.join(__dirname, "../LICENSE"));
 });
 
-app.get("/:alias", (req, res) => {
+app.get("/:alias", (req: any, res: any) => {
   const alias = req.params.alias;
 
-  const result = data.find((item) => item.alias === alias);
+  const result = data.find((item: any) => item.alias === alias);
 
   if (!result) {
     res
@@ -94,7 +100,7 @@ app.get("/:alias", (req, res) => {
   }
 });
 
-app.all("*", (_, res) => {
+app.all("*", (_: any, res: any) => {
   res
     .status(404)
     .setHeader("Content-Type", "application/json")
@@ -108,8 +114,6 @@ app.all("*", (_, res) => {
     );
 });
 
-const PORT = 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server is listening on http://[::1]:${PORT}`);
+app.listen(port, () => {
+  console.log(`[server]: Server is running at http://[::1]:${port}`);
 });

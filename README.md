@@ -2,11 +2,11 @@
 
 <p align="center">
 <a href="https://skillicons.dev">
-<img src="https://skillicons.dev/icons?i=express,webpack,nodejs,vercel&perline=4" />
+<img src="https://skillicons.dev/icons?i=typescript,express,webpack,nodejs,vercel&perline=5" />
 </a>
 </p>
 
-Bitlie is a simple static URL shortener web app. This app is built with [Express.js](https://expressjs.com/), bundled with [Webpack](https://webpack.js.org/), run with [Node.js](https://nodejs.org/en/) and deployed with [Vercel](https://vercel.com/).
+Bitlie is a simple static URL shortener web app. This app is built on top of [TypeScript](https://www.typescriptlang.org/) with [Express.js](https://expressjs.com/), bundled with [Webpack](https://webpack.js.org/), run with [Node.js](https://nodejs.org/en/) and deployed with [Vercel](https://vercel.com/).
 
 ## Demo
 
@@ -14,6 +14,7 @@ You can see the demo [here](https://bitlie.deri.my.id/)
 
 ## Prerequisite
 
+- [TypeScript](https://www.typescriptlang.org/)
 - [Express.js](https://expressjs.com/)
 - [Webpack](https://webpack.js.org/)
 - [Node.js](https://nodejs.org/en/)
@@ -45,27 +46,33 @@ npm build && npm start
 ## Project Structure
 
 ```bash
-├── .git                    # Git folder (after you run git init or clone this repo)
-├── .vercel                 # Vercel configuration folder (after you deploy to Vercel)
-├── dist                    # Bundle file (after you run npm build)
-├── node_modules            # Node modules folder (after you run npm install)
-├── src                     # Main source folder
+├── .git                        # Git folder (after you run git init or clone this repo)
+├── .vercel                     # Vercel configuration folder (after you deploy to Vercel)
+├── dist                        # Bundle file (after you run npm build)
+├── node_modules                # Node modules folder (after you run npm install)
+├── src                         # Main source folder
 │   ├── data ──┐
-│   │          └── index.js # Data source for storing short URL
+│   │          └── links.ts     # Data source for storing short URL
 │   │
 │   ├── lib ───┐
-│   │          └── index.js # Helper functions
+│   │          │── cleanup.ts   # Cleanup leftover build files (after you run npm build)
+│   │          └── utils.ts     # Helper functions
 │   │
-│   └── server.js           # Main server file
-├── .gitignore              # Ignore file/folder for git
-├── LICENSE                 # License file
-├── nodemon.json            # Nodemon configuration file (for development mode)
-├── package.json            # NPM package file (for dependencies)
-├── package-lock.json       # NPM package lock file (for dependencies)
-├── README.md               # README file (this file)
-├── vercel.json             # Vercel configuration file (for vercel serverless function configuration)
-└── webpack.config.js       # Webpack configuration file (for bundling & minifying the source code)
-
+│   ├── server.ts               # Main server file
+│   │
+│   └── types ─┐
+│              └── globals.ts   # Global types
+├── .gitignore                  # Ignore file/folder for git
+├── .env                        # Environment variable file (for development mode)
+├── .env.example                # Environment variable example file (for development mode)
+├── LICENSE                     # License file
+├── nodemon.json                # Nodemon configuration file (for development mode)
+├── package.json                # NPM package file (for dependencies)
+├── package-lock.json           # NPM package lock file (for dependencies)
+├── README.md                   # README file (this file)
+├── tsconfig.json               # TypeScript configuration file (for TypeScript compiler)
+├── vercel.json                 # Vercel configuration file (for vercel serverless function configuration)
+└── webpack.config.js           # Webpack configuration file (for bundling & minifying the source code)
 ```
 
 ## Deployment

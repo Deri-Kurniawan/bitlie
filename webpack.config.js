@@ -3,9 +3,9 @@ const nodeExternals = require("webpack-node-externals");
 
 module.exports = {
   mode: "production",
-  entry: ["./src/server.js", "./package.json"],
+  entry: ["./dist/server.js", "./package.json"],
   output: {
-    filename: "main.js",
+    filename: "main.bundle.js",
     path: path.resolve("dist"),
   },
   target: "node",
