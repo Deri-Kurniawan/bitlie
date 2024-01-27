@@ -1,4 +1,6 @@
-const data = [
+import type { DataProps } from "../types/globals";
+
+const data: DataProps[] = [
   ["github", "https://github.com/deri-kurniawan"],
   ["instagram", "https://instagram.com/deri561/"],
   ["stackoverflow", "https://stackoverflow.com/users/19716588/deri-kurniawan"],

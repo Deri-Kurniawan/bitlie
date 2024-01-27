@@ -1,4 +1,5 @@
-import { DataProps } from "./types/globals";
+import type { DataProps } from "./types/globals";
+import type { Request, Response } from "express";
 
 const dotenv = require("dotenv");
 const express = require("express");
@@ -16,7 +17,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/", async (req: any, res: any) => {
+app.get("/", async (req: Request, res: Response) => {
   const {
     name,
     version,
@@ -61,17 +62,17 @@ app.get("/", async (req: any, res: any) => {
     .send(jsonBeautify(responseBuilder));
 });
 
-app.get("/LICENSE", (_: any, res: any) => {
+app.get("/LICENSE", (_: Request, res: Response) => {
   res
     .setHeader("Content-Type", "text/plain")
     .status(200)
     .sendFile(path.join(__dirname, "../LICENSE"));
 });
 
-app.get("/:alias", (req: any, res: any) => {
+app.get("/:alias", (req: Request, res: Response) => {
   const alias = req.params.alias;
 
-  const result = data.find((item: any) => item.alias === alias);
+  const result = data.find((item: DataProps) => item.alias === alias);
 
   if (!result) {
     res
@@ -100,7 +101,7 @@ app.get("/:alias", (req: any, res: any) => {
   }
 });
 
-app.all("*", (_: any, res: any) => {
+app.all("*", (_: Request, res: Response) => {
   res
     .status(404)
     .setHeader("Content-Type", "application/json")
