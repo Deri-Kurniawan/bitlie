@@ -50,18 +50,12 @@ npm build && npm start
 ├── .vercel                     # Vercel configuration folder (after you deploy to Vercel)
 ├── dist                        # Bundle file (after you run npm build)
 ├── node_modules                # Node modules folder (after you run npm install)
+├── prisma                      # Prisma configuration folder (after you run npm
 ├── src                         # Main source folder
-│   ├── data ──┐
-│   │          └── links.ts     # Data source for storing short URL
-│   │
-│   ├── lib ───┐
-│   │          │── cleanup.ts   # Cleanup leftover build files (after you run npm build)
-│   │          └── utils.ts     # Helper functions
-│   │
-│   ├── server.ts               # Main server file
-│   │
-│   └── types ─┐
-│              └── globals.ts   # Global types
+│   ├── lib                     # Library folder
+│   ├── routes                  # Routes folder (handlers & middlewares)
+│   ├── types                   # Types folder (for TypeScript)
+│   └── app.ts                  # Main of the application (entry point)
 ├── .gitignore                  # Ignore file/folder for git
 ├── .env                        # Environment variable file (for development mode)
 ├── .env.example                # Environment variable example file (for development mode)
