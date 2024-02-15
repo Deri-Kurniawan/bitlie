@@ -1,10 +1,7 @@
-export type RawDataProps = {
-  [key: string]: any;
+import type { NextFunction, Request, Response } from "express";
+export type Route = {
+  path: string;
+  method: "get" | "post" | "put" | "delete" | "all";
+  middleware?: ((req: Request, res: Response, next: NextFunction) => any)[];
+  handler: (req: Request, res: Response) => any;
 };
-
-export type DataProps<T = {}> = {
-  alias: string;
-  targetUrl: string;
-} & T;
-
-export type Function<A = {}, R = void> = (data: DataProps<A>) => R;

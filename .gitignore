@@ -8,3 +8,4 @@ dist
 
 # dependencies
 node_modules
+.env*.local

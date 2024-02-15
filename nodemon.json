@@ -1,8 +1,8 @@
 {
   "restartable": "rs",
   "verbose": true,
-  "watch": ["src"],
-  "ignore": [".git", "node_modules/**/node_modules"],
+  "watch": ["src", "nodemon.json"],
+  "ignore": [".git", "node_modules/*"],
   "ext": "ts,js",
   "env": {
     "NODE_ENV": "development"

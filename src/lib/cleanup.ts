@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 /**
  * This script is designed to clean up directories and files listed after a build process is completed.
@@ -8,7 +8,7 @@ const path = require("path");
  */
 (() => {
   const directoriesToRemove: string[] = ["dist"];
-  const exceptions: string[] = ["main.bundle.js"];
+  const exceptions: string[] = ["main.bundle.js", "main.bundle.js.LICENSE.txt"];
 
   let totalFiles = 0;
   let totalDirs = 0;
