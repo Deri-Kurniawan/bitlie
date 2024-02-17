@@ -30,7 +30,7 @@ export async function handleLinkRedirect(req: Request, res: Response) {
       },
     });
 
-    res.status(301).redirect(findLink.url);
+    res.status(HttpStatusCode.MOVED_PERMANENTLY).redirect(findLink.url);
   } else {
     res.status(HttpStatusCode.NOT_FOUND).json({
       code: HttpStatusCode.NOT_FOUND,
@@ -48,7 +48,7 @@ export async function handleGetLinks(req: Request, res: Response) {
         .default("createdAt")
         .optional(),
       order: z.enum(["asc", "desc"]).default("asc").optional(),
-      with_clicks: z.enum(["1", "0"]).optional(),
+      with_clicks: z.enum(["1", "0"]).default("0").optional(),
     })
     .safeParse(req.query);
 
@@ -87,15 +87,12 @@ export async function handleGetLinks(req: Request, res: Response) {
     },
   });
 
-  res
-    .setHeader("Content-Type", "application/json")
-    .status(HttpStatusCode.OK)
-    .send({
-      code: HttpStatusCode.OK,
-      status: "success",
-      message: "Links retrieved successfully",
-      data,
-    });
+  res.status(HttpStatusCode.OK).json({
+    code: HttpStatusCode.OK,
+    status: "success",
+    message: "Links retrieved successfully",
+    data,
+  });
 }
 
 export async function handleLinkCreate(req: Request, res: Response) {
@@ -109,7 +106,7 @@ export async function handleLinkCreate(req: Request, res: Response) {
     });
 
     if (isLinkAlreadyExist) {
-      res.status(HttpStatusCode.CONFLICT).send({
+      res.status(HttpStatusCode.CONFLICT).json({
         code: HttpStatusCode.CONFLICT,
         status: "error",
         message: "Alias already taken",
@@ -126,25 +123,12 @@ export async function handleLinkCreate(req: Request, res: Response) {
     },
   });
 
-  const response: {
-    code: number;
-    status: string;
-    message: string;
-    data?: any;
-    errors?: any;
-  } = {
-    code: HttpStatusCode.CREATED,
-    status: "success",
-    message: "Link created successfully",
-  };
-
   if (created) {
-    if (req.query.refetch == "1") {
-      const links = await prisma.link.findMany();
-      response.data = links;
-    }
-
-    res.status(response.code).json(response);
+    res.status(HttpStatusCode.CREATED).json({
+      code: HttpStatusCode.CREATED,
+      status: "success",
+      message: "Link created successfully",
+    });
   } else {
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -206,7 +190,7 @@ export async function handleLinkUpdate(req: Request, res: Response) {
   });
 
   if (findExistingLinkByAlias && findExistingLinkByAlias.id !== id) {
-    res.status(HttpStatusCode.CONFLICT).send({
+    res.status(HttpStatusCode.CONFLICT).json({
       code: HttpStatusCode.CONFLICT,
       status: "error",
       message: "Alias already taken",
@@ -225,25 +209,12 @@ export async function handleLinkUpdate(req: Request, res: Response) {
     },
   });
 
-  const responseBuilder: {
-    code: number;
-    status: string;
-    message: string;
-    data?: any;
-    errors?: any;
-  } = {
-    code: HttpStatusCode.OK,
-    status: "success",
-    message: "Link updated successfully",
-  };
-
   if (updated) {
-    if (req.query.refetch == "1") {
-      const links = await prisma.link.findMany();
-      responseBuilder.data = links;
-    }
-
-    res.status(responseBuilder.code).json(responseBuilder);
+    res.status(HttpStatusCode.OK).json({
+      code: HttpStatusCode.OK,
+      status: "success",
+      message: "Link updated successfully",
+    });
   } else {
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       code: HttpStatusCode.INTERNAL_SERVER_ERROR,
@@ -255,7 +226,7 @@ export async function handleLinkUpdate(req: Request, res: Response) {
 
 export async function handleLinkDelete(req: Request, res: Response) {
   const { id } = req.params;
-  const responseBuilder: {
+  const response: {
     code: number;
     status: string;
     message: string;
@@ -274,12 +245,7 @@ export async function handleLinkDelete(req: Request, res: Response) {
   });
 
   if (deleteLink) {
-    if (req.query.refetch == "1") {
-      const links = await prisma.link.findMany();
-      responseBuilder.data = links;
-    }
-
-    res.status(responseBuilder.code).json(responseBuilder);
+    res.status(response.code).json(response);
   } else {
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       code: HttpStatusCode.INTERNAL_SERVER_ERROR,

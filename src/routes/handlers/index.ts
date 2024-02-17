@@ -39,6 +39,11 @@ export async function handleGetAppInfo(req: Request, res: Response) {
                 default: "asc",
                 accepted: ["asc", "desc"],
               },
+              with_clicks: {
+                description: "Include clicks data",
+                default: "0",
+                accepted: ["1", "0"],
+              },
             },
           },
         },
@@ -56,38 +61,14 @@ export async function handleGetAppInfo(req: Request, res: Response) {
           POST: {
             description: "Create a new link",
             endpoint: `${req.baseUrl}/api/links`,
-            query: {
-              refetch: {
-                description: "Refetch all links",
-                default: null,
-                accepted: 1,
-                path: `${req.baseUrl}/api/links?refetch=1`,
-              },
-            },
           },
           PUT: {
             description: "Update an existing link",
             endpoint: `${req.baseUrl}/api/links/:id`,
-            query: {
-              refetch: {
-                description: "Refetch all links",
-                default: null,
-                accepted: 1,
-                path: `${req.baseUrl}/api/links?refetch=1`,
-              },
-            },
           },
           DELETE: {
             description: "Delete an existing link",
             endpoint: `${req.baseUrl}/api/links/:id`,
-            query: {
-              refetch: {
-                description: "Refetch all links",
-                default: null,
-                accepted: 1,
-                path: `${req.baseUrl}/api/links?refetch=1`,
-              },
-            },
           },
         },
       },

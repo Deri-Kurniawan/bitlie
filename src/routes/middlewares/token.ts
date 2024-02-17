@@ -15,7 +15,7 @@ export async function middlewareVerifyToken(
   });
 
   if (!tokenAttached || !isTokenExist) {
-    res.status(HttpStatusCode.UNAUTHORIZED).send({
+    res.status(HttpStatusCode.UNAUTHORIZED).json({
       code: HttpStatusCode.UNAUTHORIZED,
       status: "error",
       message: "Unauthorized",

@@ -39,7 +39,7 @@ export function middlewareLinkCreateRequestValidator(
     .safeParse(req.body);
 
   if (!schema.success) {
-    res.status(HttpStatusCode.BAD_REQUEST).send({
+    res.status(HttpStatusCode.BAD_REQUEST).json({
       code: HttpStatusCode.BAD_REQUEST,
       status: "error",
       message: "Bad Request",
@@ -92,7 +92,7 @@ export function middlewareLinkUpdateRequestValidator(
     .safeParse(req.body);
 
   if (!schema.success) {
-    res.status(HttpStatusCode.BAD_REQUEST).send({
+    res.status(HttpStatusCode.BAD_REQUEST).json({
       code: HttpStatusCode.BAD_REQUEST,
       status: "error",
       message: "Bad Request",
