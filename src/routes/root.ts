@@ -2,7 +2,7 @@ import { type Request, type Response } from "express";
 import path from "path";
 import { HttpStatusCode } from "../lib/http-status-code";
 import { Route } from "../types/globals";
-import { handleGetAppInfo } from "./handlers";
+import { handleGetAppInfo } from "./handlers/app";
 import {
   handleGetLinkDetails,
   handleGetLinks,
@@ -12,7 +12,6 @@ import {
   handleLinkRedirect,
   handleLinkUpdate,
 } from "./handlers/links";
-import { handleGetStats } from "./handlers/stats";
 import {
   middlewareLinkCreateRequestValidator,
   middlewareLinkDeleteRequestValidator,
@@ -37,14 +36,14 @@ export const routes: Route[] = [
         .sendFile(path.join(__dirname, "../../LICENSE"));
     },
   },
-  // stats
+  // app info
   {
-    path: "/api/stats",
+    path: "/api/app",
     method: "get",
     middleware: [middlewareVerifyToken],
-    handler: handleGetStats,
+    handler: handleGetAppInfo,
   },
-  // end of stats
+  // end of app info
 
   // links
   {

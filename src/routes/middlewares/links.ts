@@ -114,7 +114,6 @@ export async function middlewareLinkDeleteRequestValidator(
   res: Response,
   next: NextFunction
 ) {
-  const { id } = req.params;
   const schema = z
     .object({
       id: z.string().min(1, "ID is required"),
@@ -132,21 +131,6 @@ export async function middlewareLinkDeleteRequestValidator(
           message: error.message,
         })),
       ],
-    });
-    return;
-  }
-
-  const isLinkExist = await prisma.link.findFirst({
-    where: {
-      id,
-    },
-  });
-
-  if (!isLinkExist) {
-    res.status(HttpStatusCode.NOT_FOUND).json({
-      code: HttpStatusCode.NOT_FOUND,
-      status: "error",
-      message: "Link not found",
     });
     return;
   }
