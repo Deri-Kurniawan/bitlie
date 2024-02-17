@@ -3,6 +3,43 @@ import { z } from "zod";
 import { HttpStatusCode } from "../../lib/http-status-code";
 import prisma from "../../lib/prisma";
 
+export async function handleLinkRedirect(req: Request, res: Response) {
+  const { alias } = req.params;
+  const findLink = await prisma.link.findFirst({
+    where: {
+      alias,
+    },
+  });
+
+  if (findLink) {
+    const ipAddress = Array.isArray(req.headers["x-forwarded-for"])
+      ? req.headers["x-forwarded-for"][0]
+      : req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+    const platform = Array.isArray(req.headers["sec-ch-ua-platform"])
+      ? req.headers["sec-ch-ua-platform"][0]
+      : req.headers["sec-ch-ua-platform"];
+
+    await prisma.click.create({
+      data: {
+        linkId: findLink.id,
+        ipAddress,
+        userAgent: req.headers["user-agent"],
+        referer: req.headers["referer"],
+        platform: platform?.replace(/"/g, ""),
+      },
+    });
+
+    res.status(301).redirect(findLink.url);
+  } else {
+    res.status(HttpStatusCode.NOT_FOUND).json({
+      code: HttpStatusCode.NOT_FOUND,
+      status: "error",
+      message: "Link not found",
+    });
+  }
+}
+
 export async function handleGetLinks(req: Request, res: Response) {
   const inputSchema = z
     .object({
@@ -11,6 +48,7 @@ export async function handleGetLinks(req: Request, res: Response) {
         .default("createdAt")
         .optional(),
       order: z.enum(["asc", "desc"]).default("asc").optional(),
+      with_clicks: z.enum(["1", "0"]).optional(),
     })
     .safeParse(req.query);
 
@@ -29,11 +67,23 @@ export async function handleGetLinks(req: Request, res: Response) {
     return;
   }
 
-  const { sort_by = "createdAt", order = "asc" } = inputSchema.data;
+  const {
+    sort_by = "createdAt",
+    order = "asc",
+    with_clicks = "0",
+  } = inputSchema.data;
 
   const data = await prisma.link.findMany({
     orderBy: {
       [String(sort_by)]: order,
+    },
+    include: {
+      clicks: with_clicks === "1",
+      _count: {
+        select: {
+          clicks: true,
+        },
+      },
     },
   });
 
@@ -235,37 +285,6 @@ export async function handleLinkDelete(req: Request, res: Response) {
       code: HttpStatusCode.INTERNAL_SERVER_ERROR,
       status: "error",
       message: "Internal Server Error",
-    });
-  }
-}
-
-export async function handleLinkRedirect(req: Request, res: Response) {
-  const { alias } = req.params;
-  const findLink = await prisma.link.findFirst({
-    where: {
-      alias,
-    },
-  });
-
-  if (findLink) {
-    await prisma.link.update({
-      where: {
-        alias,
-      },
-      data: {
-        clicks: {
-          increment: 1,
-        },
-        updatedAt: findLink.updatedAt,
-      },
-    });
-
-    res.status(301).redirect(findLink.url);
-  } else {
-    res.status(HttpStatusCode.NOT_FOUND).json({
-      code: HttpStatusCode.NOT_FOUND,
-      status: "error",
-      message: "Link not found",
     });
   }
 }

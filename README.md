@@ -31,6 +31,18 @@ npm install
 
 ## Usage
 
+For setup your environment variable, you can copy .env.example to .env and then fill the environment variable with your own configuration.
+
+```bash
+cp .env.example .env
+```
+
+For database migration, you can run this command to generate the database schema and then migrate it to the database.
+
+```bash
+npm run db:push && npm run db:seed
+```
+
 For development mode, you can run this command to start the server and watch the changes
 
 ```bash
@@ -41,6 +53,14 @@ For production mode, you can run this command to build the app and start the ser
 
 ```bash
 npm build && npm start
+```
+
+For deployment, you can run this command to deploy the app to Vercel.
+
+**Warning**: Before you deploy this app to Vercel, you need remove vercel builds[] from vercel.json file. Because this app need to generate prisma client and then deploy it to Vercel. After you deploy it bring back vercel builds[] to vercel.json file and then redeploy it to activate the serverless function. (I'm sorry for this inconvenience, I will fix this issue in the future)
+
+```bash
+    npm run deploy
 ```
 
 ## Project Structure

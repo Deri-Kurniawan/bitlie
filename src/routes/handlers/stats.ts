@@ -4,13 +4,6 @@ import prisma from "../../lib/prisma";
 import { getPackageJson } from "../../lib/utils";
 
 export async function handleGetStats(_: Request, res: Response) {
-  const links = await prisma?.link.findMany({
-    select: {
-      id: true,
-      clicks: true,
-    },
-  });
-
   const packageJson = await getPackageJson();
 
   res
@@ -31,10 +24,6 @@ export async function handleGetStats(_: Request, res: Response) {
           heapTotal: (process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2),
           heapUsed: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2),
           external: (process.memoryUsage().external / 1024 / 1024).toFixed(2),
-        },
-        links: {
-          total: links?.length || 0,
-          clicks: links?.reduce((acc, link) => acc + link.clicks, 0) || 0,
         },
       },
     });

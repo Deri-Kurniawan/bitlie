@@ -13,6 +13,7 @@ const dotenv = require("dotenv");
   //   clear all data
   // await prisma.link.deleteMany({});
   // await prisma.token.deleteMany({});
+  // await prisma.click.deleteMany({});
   // console.log("All data cleared");
 
   const token = process.env.SEED_SECRET_TOKEN;
@@ -92,6 +93,11 @@ const dotenv = require("dotenv");
       name: "Portfolio",
       alias: "portfolio",
       url: "https://deri.my.id/",
+    },
+    {
+      name: "v0 by Vercel",
+      alias: "v0",
+      url: "https://v0.dev/deri-kurniawan",
     },
   ];
 

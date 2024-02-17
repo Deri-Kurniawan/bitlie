@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -18,9 +16,23 @@ model Link {
   alias     String   @unique @db.VarChar(255)
   // long for the original URL
   url       String   @db.VarChar(2048)
-  clicks    Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  clicks    Click[]
+}
+
+model Click {
+  id        String   @id @default(uuid())
+  linkId    String
+  ipAddress String?  @default("") @db.VarChar(255)
+  userAgent String?  @default("") @db.VarChar(255)
+  referer   String?  @default("") @db.VarChar(255)
+  platform  String?  @default("") @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId])
 }
 
 model Token {
