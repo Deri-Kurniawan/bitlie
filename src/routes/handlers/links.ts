@@ -226,17 +226,6 @@ export async function handleLinkUpdate(req: Request, res: Response) {
 
 export async function handleLinkDelete(req: Request, res: Response) {
   const { id } = req.params;
-  const response: {
-    code: number;
-    status: string;
-    message: string;
-    data?: any;
-    errors?: any;
-  } = {
-    code: HttpStatusCode.OK,
-    status: "success",
-    message: "Link deleted successfully",
-  };
 
   const deleteLink = await prisma.link.delete({
     where: {
@@ -245,7 +234,73 @@ export async function handleLinkDelete(req: Request, res: Response) {
   });
 
   if (deleteLink) {
-    res.status(response.code).json(response);
+    res.status(HttpStatusCode.OK).json({
+      code: HttpStatusCode.OK,
+      status: "success",
+      message: "Link deleted successfully",
+    });
+  } else {
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+}
+
+export async function handleLinkDeleteMany(req: Request, res: Response) {
+  const inputSchema = z
+    .object({
+      ids: z.array(z.string()).min(1, "ID is required"),
+    })
+    .safeParse(req.body);
+
+  if (!inputSchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...inputSchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
+  const findManyLink = await prisma.link.findMany({
+    where: {
+      id: {
+        in: req.body.ids,
+      },
+    },
+  });
+
+  if (findManyLink.length !== req.body.ids.length) {
+    res.status(HttpStatusCode.NOT_FOUND).json({
+      code: HttpStatusCode.NOT_FOUND,
+      status: "error",
+      message: "Link not found",
+    });
+    return;
+  }
+
+  const deleteLink = await prisma.link.deleteMany({
+    where: {
+      id: {
+        in: req.body.ids,
+      },
+    },
+  });
+
+  if (deleteLink) {
+    res.status(HttpStatusCode.OK).json({
+      code: HttpStatusCode.OK,
+      status: "success",
+      message: "Link deleted successfully",
+    });
   } else {
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
       code: HttpStatusCode.INTERNAL_SERVER_ERROR,

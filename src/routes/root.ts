@@ -8,6 +8,7 @@ import {
   handleGetLinks,
   handleLinkCreate,
   handleLinkDelete,
+  handleLinkDeleteMany,
   handleLinkRedirect,
   handleLinkUpdate,
 } from "./handlers/links";
@@ -79,6 +80,13 @@ export const routes: Route[] = [
     method: "delete",
     middleware: [middlewareVerifyToken, middlewareLinkDeleteRequestValidator],
     handler: handleLinkDelete,
+  },
+
+  {
+    path: "/api/links",
+    method: "delete",
+    middleware: [middlewareVerifyToken],
+    handler: handleLinkDeleteMany,
   },
   // end of links
 
