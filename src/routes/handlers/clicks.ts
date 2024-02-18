@@ -5,7 +5,7 @@ import { HttpStatusCode } from "../../lib/http-status-code";
 
 export async function handleGetClicks(req: Request, res: Response) {
   try {
-    const inputSchema = z
+    const querySchema = z
       .object({
         order: z.enum(["asc", "desc"]).default("desc").optional(),
         sort_by: z
@@ -24,12 +24,12 @@ export async function handleGetClicks(req: Request, res: Response) {
       })
       .safeParse(req.query);
 
-    if (!inputSchema.success) {
+    if (!querySchema.success) {
       return res.status(400).json({
         code: 400,
         status: "error",
         message: "Invalid input",
-        errors: inputSchema.error,
+        errors: querySchema.error,
       });
     }
 
@@ -38,7 +38,7 @@ export async function handleGetClicks(req: Request, res: Response) {
       order = "asc",
       sort_by = "createdAt",
       with_links = "0",
-    } = inputSchema.data;
+    } = querySchema.data;
 
     const clicks = await prisma.click.findMany({
       take: Number(limit),
@@ -67,29 +67,8 @@ export async function handleGetClicks(req: Request, res: Response) {
 }
 
 export async function handleLinkDelete(req: Request, res: Response) {
-  const schema = z
-    .object({
-      id: z.string().min(1, "ID is required"),
-    })
-    .safeParse(req.params);
-
-  if (!schema.success) {
-    res.status(HttpStatusCode.BAD_REQUEST).json({
-      code: HttpStatusCode.BAD_REQUEST,
-      status: "error",
-      message: "Bad Request",
-      errors: [
-        ...schema.error.errors.map((error) => ({
-          path: error.path.join("."),
-          message: error.message,
-        })),
-      ],
-    });
-    return;
-  }
-
   try {
-    const { id } = schema.data;
+    const { id } = req.params;
 
     const isClickExist = await prisma.click.findFirst({
       where: {

@@ -4,7 +4,32 @@ import { HttpStatusCode } from "../../lib/http-status-code";
 import prisma from "../../lib/prisma";
 
 export async function handleLinkRedirect(req: Request, res: Response) {
-  const { nc: noClick = "0" } = req.query;
+  const querySchema = z
+    .object({
+      /**
+       * nc = No Click
+       */
+      nc: z.enum(["1", "0"]).default("0").optional(),
+    })
+    .safeParse(req.query);
+
+  if (!querySchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...querySchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
+  const { nc: noClick = "0" } = querySchema.data;
+
   try {
     const { alias } = req.params;
     const findLink = await prisma.link.findFirst({
@@ -53,12 +78,38 @@ export async function handleLinkRedirect(req: Request, res: Response) {
 }
 
 export async function handleGetLinks(req: Request, res: Response) {
+  const querySchema = z
+    .object({
+      sort_by: z
+        .enum(["name", "alias", "url", "createdAt", "updatedAt"])
+        .default("createdAt")
+        .optional(),
+      order: z.enum(["asc", "desc"]).default("asc").optional(),
+      with_clicks: z.enum(["1", "0"]).default("0").optional(),
+    })
+    .safeParse(req.query);
+
+  if (!querySchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...querySchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
   try {
     const {
       sort_by = "createdAt",
       order = "asc",
       with_clicks = "0",
-    } = req.query;
+    } = querySchema.data;
 
     const data = await prisma.link.findMany({
       orderBy: {
@@ -91,8 +142,53 @@ export async function handleGetLinks(req: Request, res: Response) {
 }
 
 export async function handleLinkCreate(req: Request, res: Response) {
+  const bodySchema = z
+    .object({
+      name: z
+        .string({
+          required_error: "Name is required",
+          invalid_type_error: "Name must be a string",
+        })
+        .min(1, "Name is required"),
+      alias: z
+        .string({
+          required_error: "Alias is required",
+          invalid_type_error: "Alias must be a string",
+        })
+        .min(1, "Alias is required")
+        .regex(
+          /^[a-zA-Z0-9-_]+$/,
+          "Alias must be alphanumeric and hyphens and underscores only"
+        ),
+      url: z
+        .string({
+          required_error: "URL is required",
+          invalid_type_error: "URL must be a string",
+        })
+        .regex(
+          /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\d{2,5})?@)?(?:localhost|(?!localhost)(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))))(?::\d{2,5})?(?:[/?#]\S*)?$/,
+          "URL is invalid"
+        ),
+    })
+    .safeParse(req.body);
+
+  if (!bodySchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...bodySchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
   try {
-    const { name, alias, url } = req.body;
+    const { name, alias, url } = bodySchema.data;
 
     if (alias) {
       const isLinkAlreadyExist = await prisma.link.findFirst({
@@ -170,9 +266,54 @@ export async function handleGetLinkDetails(req: Request, res: Response) {
 }
 
 export async function handleLinkUpdate(req: Request, res: Response) {
+  const bodySchema = z
+    .object({
+      name: z
+        .string({
+          required_error: "Name is required",
+          invalid_type_error: "Name must be a string",
+        })
+        .min(1, "Name is required"),
+      alias: z
+        .string({
+          required_error: "Alias is required",
+          invalid_type_error: "Alias must be a string",
+        })
+        .min(1, "Alias is required")
+        .regex(
+          /^[a-zA-Z0-9-_]+$/,
+          "Alias must be alphanumeric and hyphens and underscores only"
+        ),
+      url: z
+        .string({
+          required_error: "URL is required",
+          invalid_type_error: "URL must be a string",
+        })
+        .regex(
+          /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\d{2,5})?@)?(?:localhost|(?!localhost)(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))))(?::\d{2,5})?(?:[/?#]\S*)?$/,
+          "URL is invalid"
+        ),
+    })
+    .safeParse(req.body);
+
+  if (!bodySchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...bodySchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
   try {
     const { id } = req.params;
-    const { name, alias, url } = req.body;
+    const { name, alias, url } = bodySchema.data;
 
     const findExistingLink = await prisma.link.findFirst({
       where: {
@@ -204,7 +345,7 @@ export async function handleLinkUpdate(req: Request, res: Response) {
       return;
     }
 
-    const updated = await prisma.link.update({
+    await prisma.link.update({
       where: {
         id,
       },
@@ -272,19 +413,19 @@ export async function handleLinkDelete(req: Request, res: Response) {
 
 export async function handleLinkDeleteMany(req: Request, res: Response) {
   try {
-    const inputSchema = z
+    const bodySchema = z
       .object({
         ids: z.array(z.string()).min(1, "ID is required"),
       })
       .safeParse(req.body);
 
-    if (!inputSchema.success) {
+    if (!bodySchema.success) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
         code: HttpStatusCode.BAD_REQUEST,
         status: "error",
         message: "Bad Request",
         errors: [
-          ...inputSchema.error.errors.map((error) => ({
+          ...bodySchema.error.errors.map((error) => ({
             path: error.path.join("."),
             message: error.message,
           })),

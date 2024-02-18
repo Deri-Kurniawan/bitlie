@@ -14,12 +14,6 @@ import {
   handleLinkRedirect,
   handleLinkUpdate,
 } from "./handlers/links";
-import {
-  middlewareLinkCreateRequestValidator,
-  middlewareLinkDeleteRequestValidator,
-  middlewareLinkRedirectRequestValidator,
-  middlewareLinkUpdateRequestValidator,
-} from "./middlewares/links";
 import { middlewareVerifyToken } from "./middlewares/token";
 
 export const routes: Route[] = [
@@ -75,21 +69,21 @@ export const routes: Route[] = [
   {
     path: "/api/links",
     method: "post",
-    middleware: [middlewareVerifyToken, middlewareLinkCreateRequestValidator],
+    middleware: [middlewareVerifyToken],
     handler: handleLinkCreate,
   },
 
   {
     path: "/api/links/:id",
     method: "put",
-    middleware: [middlewareVerifyToken, middlewareLinkUpdateRequestValidator],
+    middleware: [middlewareVerifyToken],
     handler: handleLinkUpdate,
   },
 
   {
     path: "/api/links/:id",
     method: "delete",
-    middleware: [middlewareVerifyToken, middlewareLinkDeleteRequestValidator],
+    middleware: [middlewareVerifyToken],
     handler: handleLinkDelete,
   },
 
@@ -118,7 +112,6 @@ export const routes: Route[] = [
   {
     path: "/:alias",
     method: "get",
-    middleware: [middlewareLinkRedirectRequestValidator],
     handler: handleLinkRedirect,
   },
 
