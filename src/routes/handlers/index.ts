@@ -75,6 +75,11 @@ export async function handleGetIndex(req: Request, res: Response) {
                     default: "0",
                     options: ["0", "1"],
                   },
+                  limit: {
+                    type: "string",
+                    description: "Limit",
+                    default: "100",
+                  },
                 },
               },
               create: {
@@ -135,6 +140,52 @@ export async function handleGetIndex(req: Request, res: Response) {
                     description: "Array of IDs",
                   },
                 },
+              },
+            },
+          },
+          {
+            clicks: {
+              list: {
+                description: "Get all clicks",
+                method: "GET",
+                url: "/api/clicks",
+                query: {
+                  sort_by: {
+                    type: "string",
+                    description: "Sort by",
+                    default: "createdAt",
+                    options: [
+                      "ipAddress",
+                      "userAgent",
+                      "referer",
+                      "platform",
+                      "createdAt",
+                      "updatedAt",
+                    ],
+                  },
+                  order: {
+                    type: "string",
+                    description: "Order",
+                    default: "asc",
+                    options: ["asc", "desc"],
+                  },
+                  with_links: {
+                    type: "string",
+                    description: "With links",
+                    default: "0",
+                    options: ["0", "1"],
+                  },
+                  limit: {
+                    type: "string",
+                    description: "Limit",
+                    default: "100",
+                  },
+                },
+              },
+              delete: {
+                method: "DELETE",
+                url: "/api/clicks/:id",
+                description: "Delete a click",
               },
             },
           },
