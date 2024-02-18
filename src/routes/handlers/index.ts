@@ -2,7 +2,7 @@ import { type Request, type Response } from "express";
 import { HttpStatusCode } from "../../lib/http-status-code";
 import { getPackageJson } from "../../lib/utils";
 
-export async function handleGetAppInfo(req: Request, res: Response) {
+export async function handleGetIndex(req: Request, res: Response) {
   try {
     const { name, version, description, repository, author, license } =
       await getPackageJson();
@@ -23,56 +23,122 @@ export async function handleGetAppInfo(req: Request, res: Response) {
             url: "/LICENSE",
           },
         },
-        api: {
-          Authorization: "Bearer <token>",
-          "/": {
-            GET: {
-              description: "Visit the short URL",
-              endpoint: `${req.baseUrl}/:alias`,
-              query: {
-                sort_by: {
-                  description: "Sort by field",
-                  default: "createdAt",
-                  accepted: ["name", "alias", "url", "createdAt", "updatedAt"],
-                },
-                order: {
-                  description: "Sort order",
-                  default: "asc",
-                  accepted: ["asc", "desc"],
-                },
-                with_clicks: {
-                  description: "Include clicks data",
-                  default: "0",
-                  accepted: ["1", "0"],
+        api: [
+          {
+            index: {
+              redirect: {
+                description: "Redirect to the original URL",
+                method: "GET",
+                url: "/:alias",
+                query: {
+                  nc: {
+                    type: "string",
+                    description: "No Click",
+                    default: "0",
+                    options: ["0", "1"],
+                  },
                 },
               },
             },
           },
-          stats: {
-            GET: {
-              description: "Retrieve app stats",
-              endpoint: `${req.baseUrl}/api/stats`,
+          {
+            app: {
+              info: {
+                description: "Get app info",
+                method: "GET",
+                url: "/api/app",
+              },
             },
           },
-          links: {
-            GET: {
-              description: "Retrieve all links",
-              endpoint: `${req.baseUrl}/api/links`,
-            },
-            POST: {
-              description: "Create a new link",
-              endpoint: `${req.baseUrl}/api/links`,
-            },
-            PUT: {
-              description: "Update an existing link",
-              endpoint: `${req.baseUrl}/api/links/:id`,
-            },
-            DELETE: {
-              description: "Delete an existing link",
-              endpoint: `${req.baseUrl}/api/links/:id`,
+          {
+            links: {
+              list: {
+                description: "Get all links",
+                method: "GET",
+                url: "/api/links",
+                query: {
+                  sort_by: {
+                    type: "string",
+                    description: "Sort by",
+                    default: "createdAt",
+                    options: ["name", "alias", "url", "createdAt", "updatedAt"],
+                  },
+                  order: {
+                    type: "string",
+                    description: "Order",
+                    default: "asc",
+                    options: ["asc", "desc"],
+                  },
+                  with_clicks: {
+                    type: "string",
+                    description: "With clicks",
+                    default: "0",
+                    options: ["0", "1"],
+                  },
+                },
+              },
+              create: {
+                method: "POST",
+                url: "/api/links",
+                description: "Create a new link",
+                body: {
+                  name: {
+                    type: "string",
+                    description: "Name",
+                  },
+                  alias: {
+                    type: "string",
+                    description: "Alias",
+                  },
+                  url: {
+                    type: "string",
+                    description: "URL",
+                  },
+                },
+              },
+              details: {
+                method: "GET",
+                url: "/api/links/:id",
+                description: "Get link details",
+              },
+              update: {
+                method: "PUT",
+                url: "/api/links/:id",
+                description: "Update a link",
+                body: {
+                  name: {
+                    type: "string",
+                    description: "Name",
+                  },
+                  alias: {
+                    type: "string",
+                    description: "Alias",
+                  },
+                  url: {
+                    type: "string",
+                    description: "URL",
+                  },
+                },
+              },
+              delete: {
+                method: "DELETE",
+                url: "/api/links/:id",
+                description: "Delete a link",
+              },
+              deleteMany: {
+                method: "DELETE",
+                url: "/api/links",
+                description: "Delete many links",
+                body: {
+                  ids: {
+                    type: "array",
+                    description: "Array of IDs",
+                  },
+                },
+              },
             },
           },
-        },
+        ],
       },
     };
 

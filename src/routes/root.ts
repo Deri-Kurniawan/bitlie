@@ -15,15 +15,17 @@ import {
 import {
   middlewareLinkCreateRequestValidator,
   middlewareLinkDeleteRequestValidator,
+  middlewareLinkRedirectRequestValidator,
   middlewareLinkUpdateRequestValidator,
 } from "./middlewares/links";
 import { middlewareVerifyToken } from "./middlewares/token";
+import { handleGetIndex } from "./handlers";
 
 export const routes: Route[] = [
   {
     path: "/",
     method: "get",
-    handler: handleGetAppInfo,
+    handler: handleGetIndex,
   },
 
   {
@@ -106,6 +108,7 @@ export const routes: Route[] = [
   {
     path: "/:alias",
     method: "get",
+    middleware: [middlewareLinkRedirectRequestValidator],
     handler: handleLinkRedirect,
   },
 

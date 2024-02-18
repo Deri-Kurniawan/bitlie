@@ -4,6 +4,7 @@ import { HttpStatusCode } from "../../lib/http-status-code";
 import prisma from "../../lib/prisma";
 
 export async function handleLinkRedirect(req: Request, res: Response) {
+  const { nc: noClick = "0" } = req.query;
   try {
     const { alias } = req.params;
     const findLink = await prisma.link.findFirst({
@@ -21,15 +22,17 @@ export async function handleLinkRedirect(req: Request, res: Response) {
         ? req.headers["sec-ch-ua-platform"][0]
         : req.headers["sec-ch-ua-platform"];
 
-      await prisma.click.create({
-        data: {
-          linkId: findLink.id,
-          ipAddress,
-          userAgent: req.headers["user-agent"],
-          referer: req.headers["referer"],
-          platform: platform?.replace(/"/g, ""),
-        },
-      });
+      if (noClick === "0") {
+        await prisma.click.create({
+          data: {
+            linkId: findLink.id,
+            ipAddress,
+            userAgent: req.headers["user-agent"],
+            referer: req.headers["referer"],
+            platform: platform?.replace(/"/g, ""),
+          },
+        });
+      }
 
       res.status(HttpStatusCode.MOVED_PERMANENTLY).redirect(findLink.url);
     } else {
@@ -51,37 +54,11 @@ export async function handleLinkRedirect(req: Request, res: Response) {
 
 export async function handleGetLinks(req: Request, res: Response) {
   try {
-    const inputSchema = z
-      .object({
-        sort_by: z
-          .enum(["name", "alias", "url", "createdAt", "updatedAt"])
-          .default("createdAt")
-          .optional(),
-        order: z.enum(["asc", "desc"]).default("asc").optional(),
-        with_clicks: z.enum(["1", "0"]).default("0").optional(),
-      })
-      .safeParse(req.query);
-
-    if (!inputSchema.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        code: HttpStatusCode.BAD_REQUEST,
-        status: "error",
-        message: "Bad Request",
-        errors: [
-          ...inputSchema.error.errors.map((error) => ({
-            path: error.path.join("."),
-            message: error.message,
-          })),
-        ],
-      });
-      return;
-    }
-
     const {
       sort_by = "createdAt",
       order = "asc",
       with_clicks = "0",
-    } = inputSchema.data;
+    } = req.query;
 
     const data = await prisma.link.findMany({
       orderBy: {

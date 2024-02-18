@@ -1,7 +1,69 @@
 import { NextFunction, Request, Response } from "express";
 import z from "zod";
 import { HttpStatusCode } from "../../lib/http-status-code";
-import prisma from "../../lib/prisma";
+
+export function middlewareLinkRedirectRequestValidator(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const schema = z
+    .object({
+      nc: z.enum(["1", "0"]).default("0").optional(), // nc = No Click
+    })
+    .safeParse(req.query);
+
+  if (!schema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...schema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
+  next();
+}
+
+export function middlewareLinkGetRequestValidator(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const inputSchema = z
+    .object({
+      sort_by: z
+        .enum(["name", "alias", "url", "createdAt", "updatedAt"])
+        .default("createdAt")
+        .optional(),
+      order: z.enum(["asc", "desc"]).default("asc").optional(),
+      with_clicks: z.enum(["1", "0"]).default("0").optional(),
+    })
+    .safeParse(req.query);
+
+  if (!inputSchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...inputSchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
+  next();
+}
 
 export function middlewareLinkCreateRequestValidator(
   req: Request,
