@@ -66,7 +66,7 @@ export async function handleGetClicks(req: Request, res: Response) {
   }
 }
 
-export async function handleLinkDelete(req: Request, res: Response) {
+export async function handleClickDelete(req: Request, res: Response) {
   try {
     const { id } = req.params;
 

@@ -4,7 +4,7 @@ import { HttpStatusCode } from "../lib/http-status-code";
 import { Route } from "../types/globals";
 import { handleGetIndex } from "./handlers";
 import { handleGetAppInfo } from "./handlers/app";
-import { handleGetClicks } from "./handlers/clicks";
+import { handleClickDelete, handleGetClicks } from "./handlers/clicks";
 import {
   handleGetLinkDetails,
   handleGetLinks,
@@ -48,6 +48,12 @@ export const routes: Route[] = [
     method: "get",
     middleware: [middlewareVerifyToken],
     handler: handleGetClicks,
+  },
+  {
+    path: "/api/clicks/:id",
+    method: "delete",
+    middleware: [middlewareVerifyToken],
+    handler: handleClickDelete,
   },
   // end of clicks
 
