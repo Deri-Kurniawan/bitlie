@@ -2,7 +2,9 @@ import { type Request, type Response } from "express";
 import path from "path";
 import { HttpStatusCode } from "../lib/http-status-code";
 import { Route } from "../types/globals";
+import { handleGetIndex } from "./handlers";
 import { handleGetAppInfo } from "./handlers/app";
+import { handleGetClicks } from "./handlers/clicks";
 import {
   handleGetLinkDetails,
   handleGetLinks,
@@ -19,7 +21,6 @@ import {
   middlewareLinkUpdateRequestValidator,
 } from "./middlewares/links";
 import { middlewareVerifyToken } from "./middlewares/token";
-import { handleGetIndex } from "./handlers";
 
 export const routes: Route[] = [
   {
@@ -46,6 +47,15 @@ export const routes: Route[] = [
     handler: handleGetAppInfo,
   },
   // end of app info
+
+  // clicks
+  {
+    path: "/api/clicks",
+    method: "get",
+    middleware: [middlewareVerifyToken],
+    handler: handleGetClicks,
+  },
+  // end of clicks
 
   // links
   {
