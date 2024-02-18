@@ -86,6 +86,7 @@ export async function handleGetLinks(req: Request, res: Response) {
         .optional(),
       order: z.enum(["asc", "desc"]).default("asc").optional(),
       with_clicks: z.enum(["1", "0"]).default("0").optional(),
+      limit: z.string().default("100").optional(),
     })
     .safeParse(req.query);
 
@@ -109,9 +110,11 @@ export async function handleGetLinks(req: Request, res: Response) {
       sort_by = "createdAt",
       order = "asc",
       with_clicks = "0",
+      limit = "100",
     } = querySchema.data;
 
     const data = await prisma.link.findMany({
+      take: Number(limit),
       orderBy: {
         [String(sort_by)]: order,
       },
@@ -130,6 +133,41 @@ export async function handleGetLinks(req: Request, res: Response) {
       status: "success",
       message: "Links retrieved successfully",
       data,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+}
+
+export async function handleGetLinkDetails(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const findExistingLink = await prisma.link.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!findExistingLink) {
+      res.status(HttpStatusCode.NOT_FOUND).json({
+        code: HttpStatusCode.NOT_FOUND,
+        status: "error",
+        message: "Link not found",
+      });
+      return;
+    }
+
+    res.status(HttpStatusCode.OK).json({
+      code: HttpStatusCode.OK,
+      status: "success",
+      message: "Link details retrieved successfully",
+      data: findExistingLink,
     });
   } catch (error) {
     console.error(error);
@@ -219,41 +257,6 @@ export async function handleLinkCreate(req: Request, res: Response) {
       code: HttpStatusCode.CREATED,
       status: "success",
       message: "Link created successfully",
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-      code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-      status: "error",
-      message: "Internal Server Error",
-    });
-  }
-}
-
-export async function handleGetLinkDetails(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-
-    const findExistingLink = await prisma.link.findFirst({
-      where: {
-        id,
-      },
-    });
-
-    if (!findExistingLink) {
-      res.status(HttpStatusCode.NOT_FOUND).json({
-        code: HttpStatusCode.NOT_FOUND,
-        status: "error",
-        message: "Link not found",
-      });
-      return;
-    }
-
-    res.status(HttpStatusCode.OK).json({
-      code: HttpStatusCode.OK,
-      status: "success",
-      message: "Link details retrieved successfully",
-      data: findExistingLink,
     });
   } catch (error) {
     console.error(error);
