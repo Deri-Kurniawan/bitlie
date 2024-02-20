@@ -18,10 +18,6 @@ export async function handleGetIndex(req: Request, res: Response) {
           description,
           author,
           repository: repository.url.replace("git+", ""),
-          license: {
-            name: license,
-            url: "/LICENSE",
-          },
         },
         api: [
           {
