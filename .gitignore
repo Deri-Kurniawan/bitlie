@@ -9,3 +9,8 @@ dist
 # dependencies
 node_modules
 .env*.local
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
