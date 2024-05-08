@@ -1,3 +1,4 @@
+import consola from "consola";
 import fs from "fs";
 import path from "path";
 
@@ -36,25 +37,25 @@ import path from "path";
         } else {
           if (!exceptions.includes(entry)) {
             fs.unlinkSync(entryPath);
-            console.log(`File Removed: ${entryPath}`);
+            consola.success(`File Removed: ${entryPath}`);
           } else {
-            console.log(`File Skipped: ${entryPath} (Exception)`);
+            consola.info(`File Skipped: ${entryPath} (Exception)`);
           }
         }
       });
 
       if (fs.readdirSync(dirPath).length === 0) {
         fs.rmdirSync(dirPath);
-        console.log(`Directory Removed: ${dirPath}`);
+        consola.success(`Directory Removed: ${dirPath}`);
       } else {
-        console.log(`Directory Skipped: ${dirPath} (Contains Files)`);
+        consola.info(`Directory Skipped: ${dirPath} (Contains Files)`);
       }
     } else {
-      console.log(`Directory Not Found: ${dirPath}`);
+      consola.error(`Directory Not Found: ${dirPath}`);
     }
   };
 
-  console.log(
+  consola.info(
     `\x1b[36m[cleanup]: Cleaning up directories [${directoriesToRemove.join(
       ", "
     )}]\x1b[0m`
@@ -73,7 +74,7 @@ import path from "path";
   const endTime = Date.now();
   const elapsedTimeInSeconds = (endTime - startTime) / 1000;
 
-  console.log(
+  consola.success(
     `\x1b[32m[cleanup]: Cleanup completed in ${elapsedTimeInSeconds} seconds\x1b[0m`
   );
 })();

@@ -1,3 +1,4 @@
+import consola from "consola";
 import express, { Request, Response } from "express";
 import { z } from "zod";
 import { HttpStatusCode } from "../../lib/http-status-code";
@@ -69,7 +70,7 @@ apiLinksRouter.get(
         data,
       });
     } catch (error) {
-      console.error(error);
+      consola.error(error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         status: "error",
@@ -110,7 +111,7 @@ apiLinksRouter.get(
         data: findExistingLink,
       });
     } catch (error) {
-      console.error(error);
+      consola.error(error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         status: "error",
@@ -205,7 +206,7 @@ apiLinksRouter.post(
         data: created,
       });
     } catch (error) {
-      console.error(error);
+      consola.error(error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         status: "error",
@@ -315,7 +316,7 @@ apiLinksRouter.put(
         message: "Link updated successfully",
       });
     } catch (error) {
-      console.error(error);
+      consola.error(error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         status: "error",
@@ -359,7 +360,7 @@ apiLinksRouter.delete(
         message: "Link deleted successfully",
       });
     } catch (error) {
-      console.error(error);
+      consola.error(error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         status: "error",
@@ -426,7 +427,7 @@ apiLinksRouter.delete(
         message: "Link deleted successfully",
       });
     } catch (error) {
-      console.error(error);
+      consola.error(error);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
         code: HttpStatusCode.INTERNAL_SERVER_ERROR,
         status: "error",

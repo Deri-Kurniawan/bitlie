@@ -1,4 +1,5 @@
 import { Link } from "@prisma/client";
+import consola from "consola";
 
 const { PrismaClient } = require("@prisma/client");
 const dotenv = require("dotenv");
@@ -6,7 +7,7 @@ const dotenv = require("dotenv");
 (async () => {
   dotenv.config();
 
-  console.log("Seed file for Prisma ORM");
+  consola.info("Seed file for Prisma ORM");
 
   const prisma = new PrismaClient();
 
@@ -14,12 +15,12 @@ const dotenv = require("dotenv");
   // await prisma.link.deleteMany({});
   // await prisma.token.deleteMany({});
   // await prisma.click.deleteMany({});
-  // console.log("All data cleared");
+  // consola.success("All data cleared");
 
   const token = process.env.SEED_SECRET_TOKEN;
 
   if (token && token.length > 0) {
-    console.log("Seeding token based on .env file");
+    consola.info("Seeding token based on .env file");
     const findToken = await prisma.token.findFirst({
       where: {
         token,
@@ -27,7 +28,7 @@ const dotenv = require("dotenv");
     });
 
     if (!findToken) {
-      console.log("Token not found, seeding...");
+      consola.warn("Token not found, seeding...");
       await prisma.token.create({
         data: {
           token,
@@ -36,11 +37,13 @@ const dotenv = require("dotenv");
       });
     }
 
-    console.log("Seeding token finished");
+    consola.success("Seeding token finished");
   } else {
-    console.log("Token not found in .env file");
-    console.log("Please add SEED_SECRET_TOKEN in .env file to seed token data");
-    console.log("Skipping token seeding...");
+    consola.error("Token not found in .env file");
+    consola.info(
+      "Please add SEED_SECRET_TOKEN in .env file to seed token data"
+    );
+    consola.info("Skipping token seeding...");
   }
 
   const rawData = [
@@ -111,18 +114,18 @@ const dotenv = require("dotenv");
 
   if (findMany.length > 0) {
     const existingAliases = findMany.map((item: Link) => item.alias);
-    console.log(
+    consola.warn(
       `Data already exists for aliases: ${existingAliases.join(", ")}`
     );
-    console.log("Seed file for Prisma ORM finished");
+    consola.success("Seed file for Prisma ORM finished");
     return;
   }
 
-  console.log(`${rawData.length} Data not found, seeding...`);
+  consola.warn(`${rawData.length} Data not found, seeding...`);
 
   await prisma.link.createMany({
     data: rawData,
   });
 
-  console.log("Seed file for Prisma ORM finished");
+  consola.success("Seed file for Prisma ORM finished");
 })();
