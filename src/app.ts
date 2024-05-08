@@ -3,8 +3,12 @@ import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import http from "http";
 import path from "path";
-import { routes } from "./routes/root";
-import { Route } from "./types/globals";
+import { HttpStatusCode } from "./lib/http-status-code";
+import indexRouter from "./routes";
+import apiIndexRouter from "./routes/api";
+import apiAppRouter from "./routes/api/app";
+import apiClickRouter from "./routes/api/clicks";
+import apiLinksRouter from "./routes/api/links";
 
 // Load environment variables
 dotenv.config();
@@ -19,15 +23,30 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((_: Request, res: Response, next: NextFunction) => {
   res.set("Access-Control-Allow-Origin", "*");
   next();
 });
 
 // Routes
-routes.forEach((route: Route) => {
-  const { path, method, middleware = [], handler } = route;
-  app[method](path, ...middleware, handler);
+app.use([
+  indexRouter,
+  apiAppRouter,
+  apiClickRouter,
+  apiLinksRouter,
+  apiIndexRouter,
+]);
+
+app.all("*", (_: Request, res: Response) => {
+  res
+    .status(HttpStatusCode.NOT_FOUND)
+    .setHeader("Content-Type", "application/json")
+    .json({
+      error: {
+        code: HttpStatusCode.NOT_FOUND,
+        message: "Sorry, the requested resource could not be found.",
+      },
+    });
 });
 
 server.listen(port, (): void => {

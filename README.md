@@ -72,9 +72,10 @@ For deployment, you can run this command to deploy the app to Vercel.
 ├── node_modules                # Node modules folder (after you run npm install)
 ├── prisma                      # Prisma configuration folder (after you run npm
 ├── src                         # Main source folder
+│   ├── handlers                # Handlers folder (for request handler)
 │   ├── lib                     # Library folder
 │   ├── routes                  # Routes folder (handlers & middlewares)
-│   ├── types                   # Types folder (for TypeScript)
+│   ├── middlewares             # Middlewares folder
 │   └── app.ts                  # Main of the application (entry point)
 ├── .gitignore                  # Ignore file/folder for git
 ├── .env                        # Environment variable file (for development mode)

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
-import { HttpStatusCode } from "../../lib/http-status-code";
-import prisma from "../../lib/prisma";
+import { HttpStatusCode } from "../lib/http-status-code";
+import prisma from "../lib/prisma";
 
 export async function handleLinkRedirect(req: Request, res: Response) {
   const querySchema = z

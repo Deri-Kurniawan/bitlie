@@ -1,8 +1,8 @@
 import { type Request, type Response } from "express";
-import { HttpStatusCode } from "../../lib/http-status-code";
-import { getPackageJson } from "../../lib/utils";
+import { HttpStatusCode } from "../lib/http-status-code";
+import { getPackageJson } from "../lib/utils";
 
-export async function handleGetIndex(req: Request, res: Response) {
+export async function handleGetIndex(_: Request, res: Response) {
   try {
     const { name, version, description, repository, author, license } =
       await getPackageJson();

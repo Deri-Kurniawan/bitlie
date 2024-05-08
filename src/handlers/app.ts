@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { HttpStatusCode } from "../../lib/http-status-code";
-import { getPackageJson } from "../../lib/utils";
+import { HttpStatusCode } from "../lib/http-status-code";
+import { getPackageJson } from "../lib/utils";
 
 export async function handleGetAppInfo(_: Request, res: Response) {
   try {

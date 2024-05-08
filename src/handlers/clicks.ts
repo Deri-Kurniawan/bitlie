@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import prisma from "../../lib/prisma";
+import prisma from "../lib/prisma";
 import { z } from "zod";
-import { HttpStatusCode } from "../../lib/http-status-code";
+import { HttpStatusCode } from "../lib/http-status-code";
 
 export async function handleGetClicks(req: Request, res: Response) {
   try {

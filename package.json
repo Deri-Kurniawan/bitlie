@@ -9,6 +9,7 @@
     "start": "node .",
     "dev": "nodemon --exec ts-node src/app.ts",
     "deploy": "npm run build && vc --prod",
+    "deploy:dev": "npm run build && vc",
     "build": "npx tsc && webpack --mode=production --config webpack.config.js && npm run build:cleanup",
     "build:cleanup": "ts-node src/lib/cleanup.ts",
     "db:generate": "npx prisma generate",
