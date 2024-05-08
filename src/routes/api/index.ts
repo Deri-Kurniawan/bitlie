@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
-import { handleLinkRedirect } from "../../handlers/links";
+import { z } from "zod";
 import { HttpStatusCode } from "../../lib/http-status-code";
+import prisma from "../../lib/prisma";
 import { getPackageJson } from "../../lib/utils";
 
 const apiIndexRouter = express.Router();
@@ -16,6 +17,78 @@ apiIndexRouter.get("/api", async (_: Request, res: Response) => {
     });
 });
 
-apiIndexRouter.get("/:alias", handleLinkRedirect);
+apiIndexRouter.get("/:alias", async (req: Request, res: Response) => {
+  const querySchema = z
+    .object({
+      /**
+       * nc = No Click
+       */
+      nc: z.enum(["1", "0"]).default("0").optional(),
+    })
+    .safeParse(req.query);
+
+  if (!querySchema.success) {
+    res.status(HttpStatusCode.BAD_REQUEST).json({
+      code: HttpStatusCode.BAD_REQUEST,
+      status: "error",
+      message: "Bad Request",
+      errors: [
+        ...querySchema.error.errors.map((error) => ({
+          path: error.path.join("."),
+          message: error.message,
+        })),
+      ],
+    });
+    return;
+  }
+
+  const { nc: noClick = "0" } = querySchema.data;
+
+  try {
+    const { alias } = req.params;
+    const findLink = await prisma.link.findFirst({
+      where: {
+        alias,
+      },
+    });
+
+    if (findLink) {
+      const ipAddress = Array.isArray(req.headers["x-forwarded-for"])
+        ? req.headers["x-forwarded-for"][0]
+        : req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+      const platform = Array.isArray(req.headers["sec-ch-ua-platform"])
+        ? req.headers["sec-ch-ua-platform"][0]
+        : req.headers["sec-ch-ua-platform"];
+
+      if (noClick === "0") {
+        await prisma.click.create({
+          data: {
+            linkId: findLink.id,
+            ipAddress,
+            userAgent: req.headers["user-agent"],
+            referer: req.headers["referer"],
+            platform: platform?.replace(/"/g, ""),
+          },
+        });
+      }
+
+      res.status(HttpStatusCode.MOVED_PERMANENTLY).redirect(findLink.url);
+    } else {
+      res.status(HttpStatusCode.NOT_FOUND).json({
+        code: HttpStatusCode.NOT_FOUND,
+        status: "error",
+        message: "Link not found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+});
 
 export default apiIndexRouter;

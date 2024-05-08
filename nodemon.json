@@ -2,7 +2,7 @@
   "restartable": "rs",
   "verbose": true,
   "watch": ["src", "nodemon.json"],
-  "ignore": [".git", "node_modules/*"],
+  "ignore": [".git", "node_modules/*", "src/__tests__/*"],
   "ext": "ts,js",
   "env": {
     "NODE_ENV": "development"

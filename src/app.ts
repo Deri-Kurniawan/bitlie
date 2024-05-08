@@ -1,7 +1,6 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
-import http from "http";
 import path from "path";
 import { HttpStatusCode } from "./lib/http-status-code";
 import indexRouter from "./routes";
@@ -14,8 +13,6 @@ import apiLinksRouter from "./routes/api/links";
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
-const port = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -47,10 +44,6 @@ app.all("*", (_: Request, res: Response) => {
         message: "Sorry, the requested resource could not be found.",
       },
     });
-});
-
-server.listen(port, (): void => {
-  console.log(`[server]: Server is running at http://[::1]:${port}`);
 });
 
 export default app;

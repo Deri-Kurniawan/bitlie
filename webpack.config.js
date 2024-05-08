@@ -20,7 +20,7 @@ const METADATA = `/**!
  */`;
 module.exports = {
   mode: "production",
-  entry: ["./dist/app.js", "./package.json"],
+  entry: ["./dist/server.js", "./package.json"],
   output: {
     filename: "main.bundle.js",
     path: path.resolve("dist"),

@@ -1,9 +1,57 @@
-import express from "express";
-import { handleGetAppInfo } from "../../handlers/app";
+import express, { Request, Response } from "express";
+import { HttpStatusCode } from "../../lib/http-status-code";
+import { getPackageJson } from "../../lib/utils";
 import { middlewareVerifyToken } from "../../middlewares/token";
 
 const apiAppRouter = express.Router();
 
-apiAppRouter.get("/api/app", middlewareVerifyToken, handleGetAppInfo);
+apiAppRouter.get(
+  "/api/app",
+  middlewareVerifyToken,
+  async (_: Request, res: Response) => {
+    try {
+      const packageJson = await getPackageJson();
+      res
+        .status(HttpStatusCode.OK)
+        .setHeader("Content-Type", "application/json")
+        .json({
+          code: HttpStatusCode.OK,
+          message: "Retrieved stats successfully!",
+          data: {
+            appVersion: packageJson.version,
+            nodeVersion: process.version,
+            platform: process.platform,
+            arch: process.arch,
+            uptime: process.uptime(),
+            cpuUsageMb: process.cpuUsage(),
+            memoryUsageMB: {
+              rss: (process.memoryUsage().rss / 1024 / 1024).toFixed(2),
+              heapTotal: (
+                process.memoryUsage().heapTotal /
+                1024 /
+                1024
+              ).toFixed(2),
+              heapUsed: (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(
+                2
+              ),
+              external: (process.memoryUsage().external / 1024 / 1024).toFixed(
+                2
+              ),
+            },
+          },
+        });
+    } catch (error) {
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .setHeader("Content-Type", "application/json")
+        .json({
+          error: {
+            code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+            message: "Internal Server Error",
+          },
+        });
+    }
+  }
+);
 
 export default apiAppRouter;
