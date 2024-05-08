@@ -1,8 +1,8 @@
 import consola from "consola";
 import express, { Request, Response } from "express";
 import { z } from "zod";
-import { HttpStatusCode } from "../../lib/http-status-code";
 import prisma from "../../lib/prisma";
+import { HttpStatusCode, responseSchema } from "../../lib/utils";
 import { middlewareVerifyToken } from "../../middlewares/token";
 
 const apiLinksRouter = express.Router();
@@ -24,18 +24,19 @@ apiLinksRouter.get(
       .safeParse(req.query);
 
     if (!querySchema.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        code: HttpStatusCode.BAD_REQUEST,
-        status: "error",
-        message: "Bad Request",
-        errors: [
-          ...querySchema.error.errors.map((error) => ({
-            path: error.path.join("."),
-            message: error.message,
-          })),
-        ],
-        data: null,
-      });
+      res.status(HttpStatusCode.BAD_REQUEST).json(
+        responseSchema({
+          code: HttpStatusCode.BAD_REQUEST,
+          status: "error",
+          message: "Bad Request",
+          errors: [
+            ...querySchema.error.errors.map((error) => ({
+              path: error.path.join("."),
+              message: error.message,
+            })),
+          ],
+        })
+      );
       return;
     }
 
@@ -62,22 +63,21 @@ apiLinksRouter.get(
         },
       });
 
-      res.status(HttpStatusCode.OK).json({
-        code: HttpStatusCode.OK,
-        status: "success",
-        message: "Links retrieved successfully",
-        errors: [],
-        data,
-      });
+      res.status(HttpStatusCode.OK).json(
+        responseSchema({
+          message: "Links retrieved successfully",
+          data,
+        })
+      );
     } catch (error) {
       consola.error(error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "error",
-        message: "Internal Server Error",
-        errors: [],
-        data: null,
-      });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
     }
   }
 );
@@ -96,27 +96,31 @@ apiLinksRouter.get(
       });
 
       if (!findExistingLink) {
-        res.status(HttpStatusCode.NOT_FOUND).json({
-          code: HttpStatusCode.NOT_FOUND,
-          status: "error",
-          message: "Link not found",
-        });
+        res.status(HttpStatusCode.NOT_FOUND).json(
+          responseSchema({
+            code: HttpStatusCode.NOT_FOUND,
+            status: "error",
+            message: "Link not found",
+          })
+        );
         return;
       }
 
-      res.status(HttpStatusCode.OK).json({
-        code: HttpStatusCode.OK,
-        status: "success",
-        message: "Link details retrieved successfully",
-        data: findExistingLink,
-      });
+      res.status(HttpStatusCode.OK).json(
+        responseSchema({
+          message: "Link details retrieved successfully",
+          data: findExistingLink,
+        })
+      );
     } catch (error) {
       consola.error(error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "error",
-        message: "Internal Server Error",
-      });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
     }
   }
 );
@@ -156,17 +160,19 @@ apiLinksRouter.post(
       .safeParse(req.body);
 
     if (!bodySchema.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        code: HttpStatusCode.BAD_REQUEST,
-        status: "error",
-        message: "Bad Request",
-        errors: [
-          ...bodySchema.error.errors.map((error) => ({
-            path: error.path.join("."),
-            message: error.message,
-          })),
-        ],
-      });
+      res.status(HttpStatusCode.BAD_REQUEST).json(
+        responseSchema({
+          code: HttpStatusCode.BAD_REQUEST,
+          status: "error",
+          message: "Bad Request",
+          errors: [
+            ...bodySchema.error.errors.map((error) => ({
+              path: error.path.join("."),
+              message: error.message,
+            })),
+          ],
+        })
+      );
       return;
     }
 
@@ -181,11 +187,13 @@ apiLinksRouter.post(
         });
 
         if (isLinkAlreadyExist) {
-          res.status(HttpStatusCode.CONFLICT).json({
-            code: HttpStatusCode.CONFLICT,
-            status: "error",
-            message: "Alias already taken",
-          });
+          res.status(HttpStatusCode.CONFLICT).json(
+            responseSchema({
+              code: HttpStatusCode.CONFLICT,
+              status: "error",
+              message: "Alias already taken",
+            })
+          );
           return;
         }
       }
@@ -198,20 +206,22 @@ apiLinksRouter.post(
         },
       });
 
-      res.status(HttpStatusCode.CREATED).json({
-        code: HttpStatusCode.CREATED,
-        status: "success",
-        message: "Link created successfully",
-        errors: [],
-        data: created,
-      });
+      res.status(HttpStatusCode.CREATED).json(
+        responseSchema({
+          code: HttpStatusCode.CREATED,
+          message: "Link created successfully",
+          data: created,
+        })
+      );
     } catch (error) {
       consola.error(error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "error",
-        message: "Internal Server Error",
-      });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
     }
   }
 );
@@ -251,17 +261,19 @@ apiLinksRouter.put(
       .safeParse(req.body);
 
     if (!bodySchema.success) {
-      res.status(HttpStatusCode.BAD_REQUEST).json({
-        code: HttpStatusCode.BAD_REQUEST,
-        status: "error",
-        message: "Bad Request",
-        errors: [
-          ...bodySchema.error.errors.map((error) => ({
-            path: error.path.join("."),
-            message: error.message,
-          })),
-        ],
-      });
+      res.status(HttpStatusCode.BAD_REQUEST).json(
+        responseSchema({
+          code: HttpStatusCode.BAD_REQUEST,
+          status: "error",
+          message: "Bad Request",
+          errors: [
+            ...bodySchema.error.errors.map((error) => ({
+              path: error.path.join("."),
+              message: error.message,
+            })),
+          ],
+        })
+      );
       return;
     }
 
@@ -276,11 +288,13 @@ apiLinksRouter.put(
       });
 
       if (!findExistingLink) {
-        res.status(HttpStatusCode.NOT_FOUND).json({
-          code: HttpStatusCode.NOT_FOUND,
-          status: "error",
-          message: "Link not found",
-        });
+        res.status(HttpStatusCode.NOT_FOUND).json(
+          responseSchema({
+            code: HttpStatusCode.NOT_FOUND,
+            status: "error",
+            message: "Link not found",
+          })
+        );
         return;
       }
 
@@ -291,11 +305,13 @@ apiLinksRouter.put(
       });
 
       if (findExistingLinkByAlias && findExistingLinkByAlias.id !== id) {
-        res.status(HttpStatusCode.CONFLICT).json({
-          code: HttpStatusCode.CONFLICT,
-          status: "error",
-          message: "Alias already taken",
-        });
+        res.status(HttpStatusCode.CONFLICT).json(
+          responseSchema({
+            code: HttpStatusCode.CONFLICT,
+            status: "error",
+            message: "Alias already taken",
+          })
+        );
         return;
       }
 
@@ -310,18 +326,20 @@ apiLinksRouter.put(
         },
       });
 
-      res.status(HttpStatusCode.OK).json({
-        code: HttpStatusCode.OK,
-        status: "success",
-        message: "Link updated successfully",
-      });
+      res.status(HttpStatusCode.OK).json(
+        responseSchema({
+          message: "Link updated successfully",
+        })
+      );
     } catch (error) {
       consola.error(error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "error",
-        message: "Internal Server Error",
-      });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
     }
   }
 );
@@ -340,11 +358,13 @@ apiLinksRouter.delete(
       });
 
       if (!isLinkExist) {
-        res.status(HttpStatusCode.NOT_FOUND).json({
-          code: HttpStatusCode.NOT_FOUND,
-          status: "error",
-          message: "Link not found",
-        });
+        res.status(HttpStatusCode.NOT_FOUND).json(
+          responseSchema({
+            code: HttpStatusCode.NOT_FOUND,
+            status: "error",
+            message: "Link not found",
+          })
+        );
         return;
       }
 
@@ -354,18 +374,20 @@ apiLinksRouter.delete(
         },
       });
 
-      res.status(HttpStatusCode.OK).json({
-        code: HttpStatusCode.OK,
-        status: "success",
-        message: "Link deleted successfully",
-      });
+      res.status(HttpStatusCode.OK).json(
+        responseSchema({
+          message: "Link deleted successfully",
+        })
+      );
     } catch (error) {
       consola.error(error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "error",
-        message: "Internal Server Error",
-      });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
     }
   }
 );
@@ -382,17 +404,19 @@ apiLinksRouter.delete(
         .safeParse(req.body);
 
       if (!bodySchema.success) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({
-          code: HttpStatusCode.BAD_REQUEST,
-          status: "error",
-          message: "Bad Request",
-          errors: [
-            ...bodySchema.error.errors.map((error) => ({
-              path: error.path.join("."),
-              message: error.message,
-            })),
-          ],
-        });
+        res.status(HttpStatusCode.BAD_REQUEST).json(
+          responseSchema({
+            code: HttpStatusCode.BAD_REQUEST,
+            status: "error",
+            message: "Bad Request",
+            errors: [
+              ...bodySchema.error.errors.map((error) => ({
+                path: error.path.join("."),
+                message: error.message,
+              })),
+            ],
+          })
+        );
         return;
       }
 
@@ -405,11 +429,13 @@ apiLinksRouter.delete(
       });
 
       if (findManyLink.length !== req.body.ids.length) {
-        res.status(HttpStatusCode.NOT_FOUND).json({
-          code: HttpStatusCode.NOT_FOUND,
-          status: "error",
-          message: "Link not found",
-        });
+        res.status(HttpStatusCode.NOT_FOUND).json(
+          responseSchema({
+            code: HttpStatusCode.NOT_FOUND,
+            status: "error",
+            message: "Link not found",
+          })
+        );
         return;
       }
 
@@ -421,18 +447,20 @@ apiLinksRouter.delete(
         },
       });
 
-      res.status(HttpStatusCode.OK).json({
-        code: HttpStatusCode.OK,
-        status: "success",
-        message: "Link deleted successfully",
-      });
+      res.status(HttpStatusCode.OK).json(
+        responseSchema({
+          message: "Link deleted successfully",
+        })
+      );
     } catch (error) {
       consola.error(error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-        status: "error",
-        message: "Internal Server Error",
-      });
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
     }
   }
 );

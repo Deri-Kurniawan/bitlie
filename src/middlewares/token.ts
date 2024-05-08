@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpStatusCode } from "../lib/http-status-code";
 import prisma from "../lib/prisma";
+import { HttpStatusCode, responseSchema } from "../lib/utils";
 
 export async function middlewareVerifyToken(
   req: Request,
@@ -15,11 +15,13 @@ export async function middlewareVerifyToken(
   });
 
   if (!tokenAttached || !isTokenExist) {
-    res.status(HttpStatusCode.UNAUTHORIZED).json({
-      code: HttpStatusCode.UNAUTHORIZED,
-      status: "error",
-      message: "Unauthorized",
-    });
+    res.status(HttpStatusCode.UNAUTHORIZED).json(
+      responseSchema({
+        code: HttpStatusCode.UNAUTHORIZED,
+        status: "error",
+        message: "Unauthorized",
+      })
+    );
     return;
   }
   next();

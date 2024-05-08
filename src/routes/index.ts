@@ -1,211 +1,216 @@
 import express, { type Request, type Response } from "express";
 import path from "path";
-import { HttpStatusCode } from "../lib/http-status-code";
-import { getPackageJson } from "../lib/utils";
+import { getPackageJson, HttpStatusCode, responseSchema } from "../lib/utils";
 
 const indexRouter = express.Router();
 
 indexRouter.get("/", async (_: Request, res: Response) => {
   try {
-    const { name, version, description, repository, author, license } =
+    const { name, version, description, repository, author } =
       await getPackageJson();
-
-    const responseBuilder = {
-      code: HttpStatusCode.OK,
-      status: "success",
-      message: "Welcome to the Bitlie RESTful API",
-      data: {
-        app: {
-          name,
-          version,
-          description,
-          author,
-          repository: repository.url.replace("git+", ""),
-        },
-        api: [
-          {
-            index: {
-              redirect: {
-                description: "Redirect to the original URL",
-                method: "GET",
-                url: "/:alias",
-                query: {
-                  nc: {
-                    type: "string",
-                    description: "No Click",
-                    default: "0",
-                    options: ["0", "1"],
-                  },
-                },
-              },
-            },
-          },
-          {
-            app: {
-              info: {
-                description: "Get app info",
-                method: "GET",
-                url: "/api/app",
-              },
-            },
-          },
-          {
-            links: {
-              list: {
-                description: "Get all links",
-                method: "GET",
-                url: "/api/links",
-                query: {
-                  sort_by: {
-                    type: "string",
-                    description: "Sort by",
-                    default: "createdAt",
-                    options: ["name", "alias", "url", "createdAt", "updatedAt"],
-                  },
-                  order: {
-                    type: "string",
-                    description: "Order",
-                    default: "asc",
-                    options: ["asc", "desc"],
-                  },
-                  with_clicks: {
-                    type: "string",
-                    description: "With clicks",
-                    default: "0",
-                    options: ["0", "1"],
-                  },
-                  limit: {
-                    type: "string",
-                    description: "Limit",
-                    default: "100",
-                  },
-                },
-              },
-              create: {
-                method: "POST",
-                url: "/api/links",
-                description: "Create a new link",
-                body: {
-                  name: {
-                    type: "string",
-                    description: "Name",
-                  },
-                  alias: {
-                    type: "string",
-                    description: "Alias",
-                  },
-                  url: {
-                    type: "string",
-                    description: "URL",
-                  },
-                },
-              },
-              details: {
-                method: "GET",
-                url: "/api/links/:id",
-                description: "Get link details",
-              },
-              update: {
-                method: "PUT",
-                url: "/api/links/:id",
-                description: "Update a link",
-                body: {
-                  name: {
-                    type: "string",
-                    description: "Name",
-                  },
-                  alias: {
-                    type: "string",
-                    description: "Alias",
-                  },
-                  url: {
-                    type: "string",
-                    description: "URL",
-                  },
-                },
-              },
-              delete: {
-                method: "DELETE",
-                url: "/api/links/:id",
-                description: "Delete a link",
-              },
-              deleteMany: {
-                method: "DELETE",
-                url: "/api/links",
-                description: "Delete many links",
-                body: {
-                  ids: {
-                    type: "array",
-                    description: "Array of IDs",
-                  },
-                },
-              },
-            },
-          },
-          {
-            clicks: {
-              list: {
-                description: "Get all clicks",
-                method: "GET",
-                url: "/api/clicks",
-                query: {
-                  sort_by: {
-                    type: "string",
-                    description: "Sort by",
-                    default: "createdAt",
-                    options: [
-                      "ipAddress",
-                      "userAgent",
-                      "referer",
-                      "platform",
-                      "createdAt",
-                      "updatedAt",
-                    ],
-                  },
-                  order: {
-                    type: "string",
-                    description: "Order",
-                    default: "asc",
-                    options: ["asc", "desc"],
-                  },
-                  with_links: {
-                    type: "string",
-                    description: "With links",
-                    default: "0",
-                    options: ["0", "1"],
-                  },
-                  limit: {
-                    type: "string",
-                    description: "Limit",
-                    default: "100",
-                  },
-                },
-              },
-              delete: {
-                method: "DELETE",
-                url: "/api/clicks/:id",
-                description: "Delete a click",
-              },
-            },
-          },
-        ],
-      },
-    };
 
     res
       .setHeader("Content-Type", "application/json")
       .status(HttpStatusCode.OK)
-      .json(responseBuilder);
+      .json(
+        responseSchema({
+          status: "success",
+          message: "Welcome to the Bitlie RESTful API",
+          data: {
+            app: {
+              name,
+              version,
+              description,
+              author,
+              repository: repository.url.replace("git+", ""),
+            },
+            api: [
+              {
+                index: {
+                  redirect: {
+                    description: "Redirect to the original URL",
+                    method: "GET",
+                    url: "/:alias",
+                    query: {
+                      nc: {
+                        type: "string",
+                        description: "No Click",
+                        default: "0",
+                        options: ["0", "1"],
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                app: {
+                  info: {
+                    description: "Get app info",
+                    method: "GET",
+                    url: "/api/app",
+                  },
+                },
+              },
+              {
+                links: {
+                  list: {
+                    description: "Get all links",
+                    method: "GET",
+                    url: "/api/links",
+                    query: {
+                      sort_by: {
+                        type: "string",
+                        description: "Sort by",
+                        default: "createdAt",
+                        options: [
+                          "name",
+                          "alias",
+                          "url",
+                          "createdAt",
+                          "updatedAt",
+                        ],
+                      },
+                      order: {
+                        type: "string",
+                        description: "Order",
+                        default: "asc",
+                        options: ["asc", "desc"],
+                      },
+                      with_clicks: {
+                        type: "string",
+                        description: "With clicks",
+                        default: "0",
+                        options: ["0", "1"],
+                      },
+                      limit: {
+                        type: "string",
+                        description: "Limit",
+                        default: "100",
+                      },
+                    },
+                  },
+                  create: {
+                    method: "POST",
+                    url: "/api/links",
+                    description: "Create a new link",
+                    body: {
+                      name: {
+                        type: "string",
+                        description: "Name",
+                      },
+                      alias: {
+                        type: "string",
+                        description: "Alias",
+                      },
+                      url: {
+                        type: "string",
+                        description: "URL",
+                      },
+                    },
+                  },
+                  details: {
+                    method: "GET",
+                    url: "/api/links/:id",
+                    description: "Get link details",
+                  },
+                  update: {
+                    method: "PUT",
+                    url: "/api/links/:id",
+                    description: "Update a link",
+                    body: {
+                      name: {
+                        type: "string",
+                        description: "Name",
+                      },
+                      alias: {
+                        type: "string",
+                        description: "Alias",
+                      },
+                      url: {
+                        type: "string",
+                        description: "URL",
+                      },
+                    },
+                  },
+                  delete: {
+                    method: "DELETE",
+                    url: "/api/links/:id",
+                    description: "Delete a link",
+                  },
+                  deleteMany: {
+                    method: "DELETE",
+                    url: "/api/links",
+                    description: "Delete many links",
+                    body: {
+                      ids: {
+                        type: "array",
+                        description: "Array of IDs",
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                clicks: {
+                  list: {
+                    description: "Get all clicks",
+                    method: "GET",
+                    url: "/api/clicks",
+                    query: {
+                      sort_by: {
+                        type: "string",
+                        description: "Sort by",
+                        default: "createdAt",
+                        options: [
+                          "ipAddress",
+                          "userAgent",
+                          "referer",
+                          "platform",
+                          "createdAt",
+                          "updatedAt",
+                        ],
+                      },
+                      order: {
+                        type: "string",
+                        description: "Order",
+                        default: "asc",
+                        options: ["asc", "desc"],
+                      },
+                      with_links: {
+                        type: "string",
+                        description: "With links",
+                        default: "0",
+                        options: ["0", "1"],
+                      },
+                      limit: {
+                        type: "string",
+                        description: "Limit",
+                        default: "100",
+                      },
+                    },
+                  },
+                  delete: {
+                    method: "DELETE",
+                    url: "/api/clicks/:id",
+                    description: "Delete a click",
+                  },
+                },
+              },
+            ],
+          },
+        })
+      );
   } catch (error) {
     res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
       .setHeader("Content-Type", "application/json")
-      .json({
-        error: {
+      .json(
+        responseSchema({
           code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
           message: "Internal Server Error",
-        },
-      });
+        })
+      );
   }
 });
 

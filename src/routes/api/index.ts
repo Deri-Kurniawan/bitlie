@@ -1,8 +1,12 @@
+import consola from "consola";
 import express, { Request, Response } from "express";
 import { z } from "zod";
-import { HttpStatusCode } from "../../lib/http-status-code";
 import prisma from "../../lib/prisma";
-import { getPackageJson } from "../../lib/utils";
+import {
+  getPackageJson,
+  HttpStatusCode,
+  responseSchema,
+} from "../../lib/utils";
 
 const apiIndexRouter = express.Router();
 
@@ -11,10 +15,14 @@ apiIndexRouter.get("/api", async (_: Request, res: Response) => {
   res
     .status(HttpStatusCode.OK)
     .setHeader("Content-Type", "application/json")
-    .json({
-      message: "Welcome to the API!",
-      version: packageJson.version,
-    });
+    .json(
+      responseSchema({
+        message: "Welcome to the API!",
+        data: {
+          version: packageJson.version,
+        },
+      })
+    );
 });
 
 apiIndexRouter.get("/:alias", async (req: Request, res: Response) => {
@@ -28,17 +36,19 @@ apiIndexRouter.get("/:alias", async (req: Request, res: Response) => {
     .safeParse(req.query);
 
   if (!querySchema.success) {
-    res.status(HttpStatusCode.BAD_REQUEST).json({
-      code: HttpStatusCode.BAD_REQUEST,
-      status: "error",
-      message: "Bad Request",
-      errors: [
-        ...querySchema.error.errors.map((error) => ({
-          path: error.path.join("."),
-          message: error.message,
-        })),
-      ],
-    });
+    res.status(HttpStatusCode.BAD_REQUEST).json(
+      responseSchema({
+        code: HttpStatusCode.BAD_REQUEST,
+        status: "error",
+        message: "Bad Request",
+        errors: [
+          ...querySchema.error.errors.map((error) => ({
+            path: error.path.join("."),
+            message: error.message,
+          })),
+        ],
+      })
+    );
     return;
   }
 
@@ -75,19 +85,23 @@ apiIndexRouter.get("/:alias", async (req: Request, res: Response) => {
 
       res.status(HttpStatusCode.MOVED_PERMANENTLY).redirect(findLink.url);
     } else {
-      res.status(HttpStatusCode.NOT_FOUND).json({
-        code: HttpStatusCode.NOT_FOUND,
-        status: "error",
-        message: "Link not found",
-      });
+      res.status(HttpStatusCode.NOT_FOUND).json(
+        responseSchema({
+          code: HttpStatusCode.NOT_FOUND,
+          status: "error",
+          message: "Link not found",
+        })
+      );
     }
   } catch (error) {
-    console.error(error);
-    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-      code: HttpStatusCode.INTERNAL_SERVER_ERROR,
-      status: "error",
-      message: "Internal Server Error",
-    });
+    consola.error(error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+      responseSchema({
+        code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+        status: "error",
+        message: "Internal Server Error",
+      })
+    );
   }
 });
 

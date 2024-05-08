@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import path from "path";
-import { HttpStatusCode } from "./lib/http-status-code";
+import { HttpStatusCode, responseSchema } from "./lib/utils";
 import indexRouter from "./routes";
 import apiIndexRouter from "./routes/api";
 import apiAppRouter from "./routes/api/app";
@@ -38,12 +38,13 @@ app.all("*", (_: Request, res: Response) => {
   res
     .status(HttpStatusCode.NOT_FOUND)
     .setHeader("Content-Type", "application/json")
-    .json({
-      error: {
+    .json(
+      responseSchema({
         code: HttpStatusCode.NOT_FOUND,
+        status: "error",
         message: "Sorry, the requested resource could not be found.",
-      },
-    });
+      })
+    );
 });
 
 export default app;
