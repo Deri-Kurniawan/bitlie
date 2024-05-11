@@ -4,10 +4,10 @@ import express, { NextFunction, Request, Response } from "express";
 import path from "path";
 import { HttpStatusCode, responseSchema } from "./lib/utils";
 import indexRouter from "./routes";
-import apiIndexRouter from "./routes/api";
 import apiAppRouter from "./routes/api/app";
 import apiClickRouter from "./routes/api/clicks";
 import apiLinksRouter from "./routes/api/links";
+import apiIndexRedirectRouter from "./routes/index-redirect";
 
 // Load environment variables
 dotenv.config();
@@ -31,7 +31,7 @@ app.use([
   apiAppRouter,
   apiClickRouter,
   apiLinksRouter,
-  apiIndexRouter,
+  apiIndexRedirectRouter,
 ]);
 
 app.all("*", (_: Request, res: Response) => {

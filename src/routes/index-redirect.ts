@@ -1,12 +1,8 @@
 import consola from "consola";
 import express, { Request, Response } from "express";
 import { z } from "zod";
-import prisma from "../../lib/prisma";
-import {
-  getPackageJson,
-  HttpStatusCode,
-  responseSchema,
-} from "../../lib/utils";
+import prisma from "../lib/prisma";
+import { getPackageJson, HttpStatusCode, responseSchema } from "../lib/utils";
 
 const apiIndexRouter = express.Router();
 
