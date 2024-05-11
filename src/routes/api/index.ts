@@ -83,7 +83,7 @@ apiIndexRouter.get("/:alias", async (req: Request, res: Response) => {
         });
       }
 
-      res.status(HttpStatusCode.MOVED_PERMANENTLY).redirect(findLink.url);
+      res.status(HttpStatusCode.FOUND).redirect(findLink.url);
     } else {
       res.status(HttpStatusCode.NOT_FOUND).json(
         responseSchema({

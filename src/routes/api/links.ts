@@ -1,8 +1,9 @@
 import consola from "consola";
 import express, { Request, Response } from "express";
 import { z } from "zod";
+import { HttpStatusCode } from "../../lib/http-status-code";
 import prisma from "../../lib/prisma";
-import { HttpStatusCode, responseSchema } from "../../lib/utils";
+import { responseSchema } from "../../lib/utils";
 import { middlewareVerifyToken } from "../../middlewares/token";
 
 const apiLinksRouter = express.Router();
