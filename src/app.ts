@@ -8,6 +8,7 @@ import apiAppRouter from "./routes/api/app";
 import apiClickRouter from "./routes/api/clicks";
 import apiLinksRouter from "./routes/api/links";
 import apiIndexRedirectRouter from "./routes/index-redirect";
+import helmet from "helmet";
 
 // Load environment variables
 dotenv.config();
@@ -17,13 +18,14 @@ const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 
 // Middlewares
+app.use(
+  helmet({
+    hidePoweredBy: true,
+  })
+);
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use((_: Request, res: Response, next: NextFunction) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  next();
-});
 
 // Routes
 app.use([

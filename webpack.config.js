@@ -15,8 +15,12 @@ const METADATA = `/**!
  * @homepage: ${package.homepage}
  * @bugs: ${package.bugs.url}
  * @keywords: ${package.keywords}
- * @dependencies: ${Object.keys(package.dependencies)}
- * @devDependencies: ${Object.keys(package.devDependencies)}
+ * @dependencies: ${Object.keys(package.dependencies)
+   .map((key) => `${key}@${package.dependencies[key]}`)
+   .join(",")}
+ * @devDependencies: ${Object.keys(package.devDependencies)
+   .map((key) => `${key}@${package.devDependencies[key]}`)
+   .join(",")}
  */`;
 module.exports = {
   mode: "production",
