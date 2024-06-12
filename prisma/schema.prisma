@@ -35,6 +35,13 @@ model Click {
   @@index([linkId])
 }
 
+model Bot {
+  id        String   @id @default(uuid())
+  userAgent String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Token {
   id      String   @id @default(uuid())
   token   String   @unique

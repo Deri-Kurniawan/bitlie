@@ -126,4 +126,52 @@ apiClickRouter.delete(
   }
 );
 
+apiClickRouter.delete(
+  "/api/clicks",
+  middlewareVerifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const bodySchema = z
+        .object({
+          ids: z.array(z.string()).min(1, "At least one id is required"),
+        })
+        .safeParse(req.body);
+
+      if (!bodySchema.success) {
+        return res.status(HttpStatusCode.BAD_REQUEST).json(
+          responseSchema({
+            code: HttpStatusCode.BAD_REQUEST,
+            status: "error",
+            message: "Invalid input",
+            errors: bodySchema.error,
+          })
+        );
+      }
+
+      await prisma.click.deleteMany({
+        where: {
+          id: {
+            in: bodySchema.data.ids,
+          },
+        },
+      });
+
+      res.status(HttpStatusCode.OK).json(
+        responseSchema({
+          message: "Clicks deleted successfully",
+        })
+      );
+    } catch (error) {
+      consola.error(error);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(
+        responseSchema({
+          code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+          status: "error",
+          message: "Internal Server Error",
+        })
+      );
+    }
+  }
+);
+
 export default apiClickRouter;

@@ -218,7 +218,7 @@ indexRouter.get("/LICENSE", (_: Request, res: Response) => {
   res
     .setHeader("Content-Type", "text/plain")
     .status(HttpStatusCode.OK)
-    .sendFile(path.join(__dirname, "../LICENSE"));
+    .sendFile(path.join(__dirname, "../../LICENSE"));
 });
 
 export default indexRouter;

@@ -67,7 +67,13 @@ apiIndexRouter.get("/:alias", async (req: Request, res: Response) => {
         ? req.headers["sec-ch-ua-platform"][0]
         : req.headers["sec-ch-ua-platform"];
 
-      if (noClick === "0") {
+      const isBotOnTheList = await prisma.bot.findFirst({
+        where: {
+          userAgent: req.headers["user-agent"] || "",
+        },
+      });
+
+      if (noClick === "0" && !isBotOnTheList) {
         await prisma.click.create({
           data: {
             linkId: findLink.id,

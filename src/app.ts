@@ -1,14 +1,15 @@
 import cors from "cors";
 import dotenv from "dotenv";
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
+import helmet from "helmet";
 import path from "path";
 import { HttpStatusCode, responseSchema } from "./lib/utils";
 import indexRouter from "./routes";
 import apiAppRouter from "./routes/api/app";
+import apiBotsRouter from "./routes/api/bots";
 import apiClickRouter from "./routes/api/clicks";
 import apiLinksRouter from "./routes/api/links";
 import apiIndexRedirectRouter from "./routes/index-redirect";
-import helmet from "helmet";
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +34,7 @@ app.use([
   apiAppRouter,
   apiClickRouter,
   apiLinksRouter,
+  apiBotsRouter,
   apiIndexRedirectRouter,
 ]);
 
