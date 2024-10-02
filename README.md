@@ -6,7 +6,7 @@
 </a>
 </p>
 
-Bitlie is a simple static URL shortener web app. This app is built on top of [TypeScript](https://www.typescriptlang.org/) with [Express.js](https://expressjs.com/), bundled with [Webpack](https://webpack.js.org/), run with [Node.js](https://nodejs.org/en/) and deployed with [Vercel](https://vercel.com/).
+Bitlie is an API for a simple static URL shortener. This app is built on top of [TypeScript](https://www.typescriptlang.org/) with [Express.js](https://expressjs.com/), bundled with [Webpack](https://webpack.js.org/), run with [Node.js](https://nodejs.org/en/) and deployed with [Vercel](https://vercel.com/).
 
 ## Demo
 
@@ -97,7 +97,9 @@ You can deploy this app to Vercel by clicking this button below
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=http://github.com/deri-kurniawan/bitlie)
 
 ## License
+
 This project is licensed under the [MIT](/LICENSE) license.
 
 ## Author
+
 Created with ❤️ by [Deri Kurniawan](https://github.com/Deri-Kurniawan)
